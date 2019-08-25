@@ -50,9 +50,9 @@ fn random_scene() -> Box<dyn Hitable> {
         for b in -11..11 {
             let choose_mat = rng.gen::<f32>();
             let center = Vec3(
-                a as f32 + 0.9 * rng.gen::<f32>(),
+                a as f32 + 0.6 * rng.gen::<f32>(),
                 0.2,
-                b as f32 + 0.9 * rng.gen::<f32>(),
+                b as f32 + 0.6 * rng.gen::<f32>(),
             );
             let c1 = Vec3(4.0, 1.0, 0.);
             let c2 = Vec3(-4.0, 1.0, 0.);
