@@ -103,7 +103,7 @@ fn random_scene() -> Box<dyn Hitable> {
     list.push(Box::new(Sphere::new(
         Vec3(-4., 1., 0.),
         1.0,
-        Rc::new(Lambertian::new(Vec3(0.4, 0.2, 0.1))),
+        Rc::new(Lambertian::new(Vec3(0.1, 0.8, 0.1))),
     )));
     list.push(Box::new(Sphere::new(
         Vec3(4., 1., 0.),
@@ -192,5 +192,5 @@ fn main() {
         })
     });
 
-    img.save("image.png").unwrap();
+    img.save("output/image.png").unwrap();
 }
