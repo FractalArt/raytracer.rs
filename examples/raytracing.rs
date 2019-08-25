@@ -54,7 +54,10 @@ fn random_scene() -> Box<dyn Hitable> {
                 0.2,
                 b as f32 + 0.9 * rng.gen::<f32>(),
             );
-            if (center.clone() - Vec3(4., 0.2, 0.)).length() > 0.9 {
+            let c1 = Vec3(4.0, 1.0, 0.);
+            let c2 = Vec3(-4.0, 1.0, 0.);
+            let c3 = Vec3(0.0, 1.0, 0.);
+            if (center - c1).length() > 1.2 && (center - c2).length() > 1.2 && (center - c3).length() > 1.2  {
                 if choose_mat < 0.8 {
                     // diffuse
                     list.push(Box::new(Sphere::new(
@@ -114,9 +117,9 @@ fn random_scene() -> Box<dyn Hitable> {
 fn main() {
     println!("Raytracer in Rust!");
 
-    let nx = 2000;
-    let ny = 1000;
-    let ns = 100;
+    let nx = 1200;
+    let ny = 800;
+    let ns = 150;
 
     let mut img: image::RgbImage = image::ImageBuffer::new(nx, ny);
 
@@ -152,8 +155,8 @@ fn main() {
     // Set up the camera
     let look_from = Vec3(13., 2., 3.);
     let look_at = Vec3(0., 0., 0.);
-    let aperture = 0.; // 0.1;
-    let dist_to_focus = 1.; // 10;
+    let aperture = 0.1; // 0.1;
+    let dist_to_focus = 10.; // 10;
     let cam = Camera::new(
         look_from,
         look_at,
