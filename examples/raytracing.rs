@@ -1,5 +1,6 @@
 use rand::prelude::*;
-use std::rc::Rc;
+use rayon::prelude::*;
+use std::sync::Arc;
 
 use raytracer::camera::Camera;
 use raytracer::materials::Dielectric;
@@ -40,7 +41,7 @@ fn random_scene() -> Box<dyn Hitable> {
     list.push(Box::new(Sphere::new(
         Vec3(0., -1000., 0.),
         1000.,
-        Rc::new(Lambertian::new(Vec3(0.5, 0.5, 0.5))),
+        Arc::new(Lambertian::new(Vec3(0.5, 0.5, 0.5))),
     )));
 
     // Random number generator
@@ -57,13 +58,16 @@ fn random_scene() -> Box<dyn Hitable> {
             let c1 = Vec3(4.0, 1.0, 0.);
             let c2 = Vec3(-4.0, 1.0, 0.);
             let c3 = Vec3(0.0, 1.0, 0.);
-            if (center - c1).length() > 1.2 && (center - c2).length() > 1.2 && (center - c3).length() > 1.2  {
+            if (center - c1).length() > 1.2
+                && (center - c2).length() > 1.2
+                && (center - c3).length() > 1.2
+            {
                 if choose_mat < 0.8 {
                     // diffuse
                     list.push(Box::new(Sphere::new(
                         center,
                         0.2,
-                        Rc::new(Lambertian::new(Vec3(
+                        Arc::new(Lambertian::new(Vec3(
                             rng.gen::<f32>(),
                             rng.gen::<f32>(),
                             rng.gen::<f32>(),
@@ -74,7 +78,7 @@ fn random_scene() -> Box<dyn Hitable> {
                     list.push(Box::new(Sphere::new(
                         center,
                         0.2,
-                        Rc::new(Metal::new(
+                        Arc::new(Metal::new(
                             Vec3(
                                 0.5 * (1. + rng.gen::<f32>()),
                                 0.5 * (1. + rng.gen::<f32>()),
@@ -88,7 +92,7 @@ fn random_scene() -> Box<dyn Hitable> {
                     list.push(Box::new(Sphere::new(
                         center,
                         0.2,
-                        Rc::new(Dielectric::new(1.5)),
+                        Arc::new(Dielectric::new(1.5)),
                     )));
                 }
             }
@@ -98,20 +102,20 @@ fn random_scene() -> Box<dyn Hitable> {
     list.push(Box::new(Sphere::new(
         Vec3(0., 1., 0.),
         1.0,
-        Rc::new(Dielectric::new(1.5)),
+        Arc::new(Dielectric::new(1.5)),
     )));
     list.push(Box::new(Sphere::new(
         Vec3(-4., 1., 0.),
         1.0,
-        Rc::new(Lambertian::new(Vec3(0.1, 0.8, 0.1))),
+        Arc::new(Lambertian::new(Vec3(0.1, 0.8, 0.1))),
     )));
     list.push(Box::new(Sphere::new(
         Vec3(4., 1., 0.),
         1.0,
-        Rc::new(Metal::new(Vec3(0.7, 0.6, 0.5), 0.0)),
+        Arc::new(Metal::new(Vec3(0.7, 0.6, 0.5), 0.0)),
     )));
 
-    Box::new(HitableList::new(list))
+    Box::new(HitableList::new(list)) as Box<dyn Hitable>
 }
 
 fn main() {
@@ -121,42 +125,14 @@ fn main() {
     let ny = 800;
     let ns = 150;
 
-    let mut img: image::RgbImage = image::ImageBuffer::new(nx, ny);
-
-    // Create the world.
-    let mut object_list: Vec<Box<dyn Hitable>> = vec![];
-
-    object_list.push(Box::new(Sphere::new(
-        Vec3(0., 0., -1.),
-        0.5,
-        Rc::new(Lambertian::new(Vec3(0.8, 0.3, 0.3))),
-    )));
-    object_list.push(Box::new(Sphere::new(
-        Vec3(0., -100.5, -1.),
-        100.0,
-        Rc::new(Lambertian::new(Vec3(0.8, 0.8, 0.))),
-    )));
-    object_list.push(Box::new(Sphere::new(
-        Vec3(1., 0., -1.),
-        0.5,
-        Rc::new(Metal::new(Vec3(0.8, 0.6, 0.2), 0.03)),
-    )));
-    object_list.push(Box::new(Sphere::new(
-        Vec3(-1., 0., -1.),
-        0.5,
-        Rc::new(Dielectric::new(1.5)),
-    )));
-    object_list.push(Box::new(Sphere::new(
-        Vec3(-1., 0., -1.),
-        -0.45,
-        Rc::new(Dielectric::new(1.5)),
-    )));
+    // Setup the scene.
     let world = random_scene();
+    
     // Set up the camera
     let look_from = Vec3(13., 2., 3.);
     let look_at = Vec3(0., 0., 0.);
-    let aperture = 0.1; // 0.1;
-    let dist_to_focus = 10.; // 10;
+    let aperture = 0.1;
+    let dist_to_focus = 10.;
     let cam = Camera::new(
         look_from,
         look_at,
@@ -167,13 +143,14 @@ fn main() {
         dist_to_focus,
     );
 
-    // Random number generator
-    let mut rng = rand::thread_rng();
-
-    // Generate the image.
-    (0..ny).into_iter().for_each(|y| {
-        (0..nx).into_iter().for_each(|x| {
+    let buffer = (0..ny)
+        .into_par_iter()
+        .flat_map(|y| (0..nx).into_par_iter().map(move |x| (x, y))).flat_map(|(x,y)| {
+            
             let y = ny - y - 1;
+
+            // Random number generator
+            let mut rng = rand::thread_rng();
 
             let mut col = Vec3(0., 0., 0.);
             for _ in 0..ns {
@@ -187,10 +164,15 @@ fn main() {
             let r = (col.r().sqrt() * 254.99) as u8;
             let g = (col.g().sqrt() * 254.99) as u8;
             let b = (col.b().sqrt() * 254.99) as u8;
-            let color = image::Rgb([r, g, b]);
-            img.put_pixel(x, ny - y - 1, color);
-        })
-    });
+        
+            vec![r, g, b]
 
-    img.save("output/image.png").unwrap();
+        }).collect::<Vec<_>>();
+
+    let path = std::path::Path::new("output/image.png");
+
+    match image::save_buffer(path, &buffer, nx as u32, ny as u32, image::ColorType::RGB(8)) {
+        Ok(_) => println!("Image written to {:?}!", &path),
+        Err(e) => eprintln!("There was a problem in writing the image: {}", e), 
+    }
 }

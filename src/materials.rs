@@ -67,7 +67,10 @@ pub fn refract(v: &Vec3, n: &Vec3, ni_over_nt: f32) -> Option<Vec3> {
 /// Given the incoming ray and hit record containing the information
 /// on the point where this ray hits the surface, the scattered ray,
 /// as well as the attenuation vector are returned.
-pub trait Material {
+pub trait Material: Send + Sync {
+    // Subtraiting `Send` & `Sync` in order to be able to use the material
+    // objects in rayon threads using `Arc` without having to copy them.
+
     /// Return the scattered ray and the attenuation.
     fn scatter(&self, ray: &Ray, hit: &HitRecord) -> Option<(Ray, Vec3)>;
 }

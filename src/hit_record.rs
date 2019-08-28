@@ -1,6 +1,6 @@
 use crate::materials::Material;
 use crate::vec3::Vec3;
-use std::rc::Rc;
+use std::sync::Arc;
 
 /// Collect information on the hit point between a ray and an object.
 ///
@@ -13,5 +13,7 @@ pub struct HitRecord {
     pub parameter: f32,
     pub point_at_parameter: Vec3,
     pub normal: Vec3,
-    pub material: Rc<dyn Material>,
+    // Use an `Arc` such that hit records can be shared across `rayon` threads 
+    // in `Arc`s.
+    pub material: Arc<dyn Material>,
 }

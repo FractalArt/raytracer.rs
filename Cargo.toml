@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 rand = "0.7"
 image = "0.22.0"
+rayon = "1.1.0"

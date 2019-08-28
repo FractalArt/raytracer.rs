@@ -61,7 +61,7 @@
 
 use std::ops;
 
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Vec3(pub f32, pub f32, pub f32);
 
 impl Vec3 {
