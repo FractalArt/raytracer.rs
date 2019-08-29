@@ -1,8 +1,12 @@
 language: rust
 rust:
   -stable
-  -nightly
   -beta
+  -nightly
+script:
+    - cargo build --verbose
+    - cargo test --verbose
 matrix:
   allow_failures:
     - rust: nightly
+cache: cargo
