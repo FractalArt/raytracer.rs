@@ -2,7 +2,7 @@ Raytracer in Rust
 =================
 
 
-A small raytracer in rust built while reading Peter Shirley's [*Ray Tracing in One Weekend*](https://github.com/RayTracing/InOneWeekend).  
+A small raytracer in Rust built while reading Peter Shirley's [*Ray Tracing in One Weekend*](https://github.com/RayTracing/InOneWeekend).  
 
 ![spheres](output/cover.png)
 
@@ -15,7 +15,7 @@ Rust.
 
 Tests can be run with 
 
-```bash
+```
 $ cargo test
 ```
 
@@ -25,7 +25,7 @@ This also includes the doc-tests.
 
 The source code documentation can be build and viewed by running 
 
-```bash 
+```
 $ cargo doc --no-deps --open
 ```
 
