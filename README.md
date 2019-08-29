@@ -34,5 +34,5 @@ $ cargo doc --no-deps --open
 To run the example, type
 
 ```
-$ cargo run --example raytracing --release
+$ cargo run --release
 ```
