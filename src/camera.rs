@@ -77,10 +77,8 @@ impl Camera {
         let w = unit_vector(&(look_from - look_at));
         let u = unit_vector(&cross(&view_up, &w));
         let v = cross(&w, &u);
-        let lower_left_corner = origin
-            - half_width * focus_dist * u
-            - half_height * focus_dist * v
-            - focus_dist * w;
+        let lower_left_corner =
+            origin - half_width * focus_dist * u - half_height * focus_dist * v - focus_dist * w;
         let horizontal = 2. * half_width * u * focus_dist;
         let vertical = 2. * half_height * v * focus_dist;
         Camera {
@@ -107,9 +105,7 @@ impl Camera {
         let offset = self.u * rd.x() + self.v * rd.y();
         Ray::new(
             self.origin + offset,
-            self.lower_left_corner
-                + x_frac * self.horizontal
-                + y_frac * self.vertical
+            self.lower_left_corner + x_frac * self.horizontal + y_frac * self.vertical
                 - self.origin
                 - offset,
         )

@@ -7,15 +7,15 @@ use crate::vec3::Vec3;
 use std::sync::Arc;
 
 /// A Sphere in three-dimensional space.
-/// 
+///
 /// It is characterized by three properties:  
 /// - The coordinates of its center.  
-/// - It's radius 
+/// - It's radius
 /// - A pointer to the material that it is made of.  
-/// 
-/// The pointer is an `Arc` because we want to use 
-/// the Sphere object belonging to a scene in rayon 
-/// threads through `Arc`s without having to clone them. 
+///
+/// The pointer is an `Arc` because we want to use
+/// the Sphere object belonging to a scene in rayon
+/// threads through `Arc`s without having to clone them.
 pub struct Sphere {
     center: Vec3,
     radius: f32,
@@ -24,9 +24,8 @@ pub struct Sphere {
 }
 
 impl Sphere {
-
-    /// Create a `Sphere` by specifying its `center`, `radius` and `Material`. 
-    /// 
+    /// Create a `Sphere` by specifying its `center`, `radius` and `Material`.
+    ///
     /// ```
     /// use raytracer::objects::sphere;
     /// use raytracer::vec3::Vec3 as V3;
@@ -44,8 +43,8 @@ impl Sphere {
         }
     }
 
-    /// Access the center of a `Sphere`. 
-    /// 
+    /// Access the center of a `Sphere`.
+    ///
     /// ```
     /// # use raytracer::objects::sphere;
     /// # use raytracer::vec3::Vec3;
@@ -60,8 +59,8 @@ impl Sphere {
         &self.center
     }
 
-    /// Access the `radius` of a `Sphere`. 
-    /// 
+    /// Access the `radius` of a `Sphere`.
+    ///
     /// ```
     /// # use raytracer::objects::sphere;
     /// # use raytracer::vec3::Vec3;
@@ -96,8 +95,7 @@ impl Hitable for Sphere {
                 return Some(HitRecord {
                     parameter: t_candidate,
                     point_at_parameter: ray.point_at_parameter(t_candidate),
-                    normal: (ray.point_at_parameter(t_candidate) - self.center)
-                        / self.radius,
+                    normal: (ray.point_at_parameter(t_candidate) - self.center) / self.radius,
                     material: self.material.clone(),
                 });
             }
@@ -106,8 +104,7 @@ impl Hitable for Sphere {
                 return Some(HitRecord {
                     parameter: t_candidate,
                     point_at_parameter: ray.point_at_parameter(t_candidate),
-                    normal: (ray.point_at_parameter(t_candidate) - self.center)
-                        / self.radius,
+                    normal: (ray.point_at_parameter(t_candidate) - self.center) / self.radius,
                     material: self.material.clone(),
                 });
             }

@@ -471,5 +471,4 @@ mod tests {
         assert_eq!(v1.y(), 1.);
         assert_eq!(v1.z(), 1.5);
     }
-
 }

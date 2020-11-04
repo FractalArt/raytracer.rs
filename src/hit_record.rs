@@ -13,7 +13,7 @@ pub struct HitRecord {
     pub parameter: f32,
     pub point_at_parameter: Vec3,
     pub normal: Vec3,
-    // Use an `Arc` such that hit records can be shared across `rayon` threads 
+    // Use an `Arc` such that hit records can be shared across `rayon` threads
     // in `Arc`s.
     pub material: Arc<dyn Material>,
 }

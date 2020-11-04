@@ -127,7 +127,7 @@ fn main() {
 
     // Setup the scene.
     let world = random_scene();
-    
+
     // Set up the camera
     let look_from = Vec3(13., 2., 3.);
     let look_at = Vec3(0., 0., 0.);
@@ -145,8 +145,8 @@ fn main() {
 
     let buffer = (0..ny)
         .into_par_iter()
-        .flat_map(|y| (0..nx).into_par_iter().map(move |x| (x, y))).flat_map(|(x,y)| {
-            
+        .flat_map(|y| (0..nx).into_par_iter().map(move |x| (x, y)))
+        .flat_map(|(x, y)| {
             let y = ny - y - 1;
 
             // Random number generator
@@ -164,15 +164,21 @@ fn main() {
             let r = (col.r().sqrt() * 254.99) as u8;
             let g = (col.g().sqrt() * 254.99) as u8;
             let b = (col.b().sqrt() * 254.99) as u8;
-        
-            vec![r, g, b]
 
-        }).collect::<Vec<_>>();
+            vec![r, g, b]
+        })
+        .collect::<Vec<_>>();
 
     let path = std::path::Path::new("output/image.png");
 
-    match image::save_buffer(path, &buffer, nx as u32, ny as u32, image::ColorType::RGB(8)) {
+    match image::save_buffer(
+        path,
+        &buffer,
+        nx as u32,
+        ny as u32,
+        image::ColorType::RGB(8),
+    ) {
         Ok(_) => println!("Image written to {:?}!", &path),
-        Err(e) => eprintln!("There was a problem in writing the image: {}", e), 
+        Err(e) => eprintln!("There was a problem in writing the image: {}", e),
     }
 }

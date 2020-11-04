@@ -4,8 +4,8 @@ use crate::ray::Ray;
 pub mod sphere;
 
 /// Trait for objects that can be hit by a ray of light.
-pub trait Hitable: Send + Sync{
-    // Subtraiting `Send` & `Sync` in order to be able to use the hitable 
+pub trait Hitable: Send + Sync {
+    // Subtraiting `Send` & `Sync` in order to be able to use the hitable
     // objects in rayon threads without having to copy them.
 
     /// For an incoming ray check whether it intersects the object.

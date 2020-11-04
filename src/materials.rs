@@ -115,10 +115,7 @@ impl Lambertian {
 impl Material for Lambertian {
     fn scatter(&self, _ray: &Ray, hit: &HitRecord) -> Option<(Ray, Vec3)> {
         let target = hit.point_at_parameter + hit.normal + random_in_unit_sphere();
-        let scattered = Ray::new(
-            hit.point_at_parameter,
-            target - hit.point_at_parameter,
-        );
+        let scattered = Ray::new(hit.point_at_parameter, target - hit.point_at_parameter);
         Some((scattered, self.attenuation))
     }
 }
