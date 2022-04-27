@@ -1,6 +1,5 @@
 Raytracer in Rust
 =================
-![Build status](https://travis-ci.org/FractalArt/raytracer.rs.svg?branch=master)
 
 A small raytracer in Rust built while reading Peter Shirley's [*Ray Tracing in One Weekend*](https://github.com/RayTracing/InOneWeekend).  
 
