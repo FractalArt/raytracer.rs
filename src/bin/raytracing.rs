@@ -171,13 +171,7 @@ fn main() {
 
     let path = std::path::Path::new("output/image.png");
 
-    match image::save_buffer(
-        path,
-        &buffer,
-        nx as u32,
-        ny as u32,
-        image::ColorType::RGB(8),
-    ) {
+    match image::save_buffer(path, &buffer, nx as u32, ny as u32, image::ColorType::Rgb8) {
         Ok(_) => println!("Image written to {:?}!", &path),
         Err(e) => eprintln!("There was a problem in writing the image: {}", e),
     }

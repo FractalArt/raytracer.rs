@@ -27,7 +27,7 @@ pub struct Camera {
     vertical: Vec3,
     u: Vec3,
     v: Vec3,
-    w: Vec3,
+    //w: Vec3,
     lens_radius: f32,
 }
 
@@ -53,12 +53,12 @@ impl Camera {
     /// let look_at = Vec3(0., 0., -1.);
     /// let view_up = Vec3(0., 1., 0.);
     /// let aperture = 2.0;
-    /// let dist_to_focus = 3.0;
+    ///// let dist_to_focus = 3.0;
     /// let cam = Camera::new(look_from,
     ///                       look_at,
     ///                       view_up,
     ///                       vertical_field_of_view_in_degrees, aspect_x_over_y,
-    ///                       aperture, dist_to_focus);
+    ///                       aperture);//, dist_to_focus);
     /// ```
     pub fn new(
         look_from: Vec3,
@@ -89,7 +89,7 @@ impl Camera {
             lens_radius,
             u,
             v,
-            w,
+            //w,
         }
     }
 
