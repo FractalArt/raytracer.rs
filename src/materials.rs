@@ -9,11 +9,11 @@ use crate::vec3::Vec3;
 /// Generate a random vector in the unit sphere.
 pub fn random_in_unit_sphere() -> Vec3 {
     // TODO: CHECK whether it is efficient to regenerate a random number generator on every function call.
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     // Start with a vector that has length larger than 1!
     let mut p = Vec3(10., 10., 10.);
     while p.squared_length() >= 1.0 {
-        p = 2.0 * Vec3(rng.gen::<f32>(), rng.gen::<f32>(), rng.gen::<f32>()) - Vec3(1., 1., 1.);
+        p = 2.0 * Vec3(rng.random::<f32>(), rng.random::<f32>(), rng.random::<f32>()) - Vec3(1., 1., 1.);
     }
     p
 }
@@ -37,7 +37,7 @@ fn schlick(cosine: f32, ref_idx: f32) -> f32 {
 /// assert_eq!(reflected.z(), 0.);
 /// ```
 pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
-    *v - 2. * dot(&v, &n) * *n
+    *v - 2. * dot(v, n) * *n
 }
 
 /// Compute the refracted ray vector.
@@ -49,7 +49,7 @@ pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
 /// Sometimes, refraction is not possible, if Snell's law has no solution
 /// and in this case None is returned.
 pub fn refract(v: &Vec3, n: &Vec3, ni_over_nt: f32) -> Option<Vec3> {
-    let uv = unit_vector(&v);
+    let uv = unit_vector(v);
     let dt = dot(&uv, n);
     let discriminant = 1.0 - ni_over_nt.powi(2) * (1. - dt.powi(2));
     if discriminant > 0. {
@@ -193,7 +193,7 @@ impl Material for Metal {
             hit.point_at_parameter,
             reflected + self.fuzzy * random_in_unit_sphere(),
         );
-        if dot(&scattered.direction(), &hit.normal) > 0. {
+        if dot(scattered.direction(), &hit.normal) > 0. {
             Some((scattered, self.attenuation))
         } else {
             None
@@ -236,8 +236,8 @@ impl Dielectric {
 
 impl Material for Dielectric {
     fn scatter(&self, ray: &Ray, hit: &HitRecord) -> Option<(Ray, Vec3)> {
-        let reflected = reflect(&ray.direction(), &hit.normal);
-        let normal_dir = dot(&ray.direction(), &hit.normal);
+        let reflected = reflect(ray.direction(), &hit.normal);
+        let normal_dir = dot(ray.direction(), &hit.normal);
         let outward_normal = if normal_dir > 0. {
             -hit.normal
         } else {
@@ -249,18 +249,18 @@ impl Material for Dielectric {
             1.0 / self.ref_idx
         };
         let cosine = if normal_dir > 0. {
-            self.ref_idx() * dot(&ray.direction(), &hit.normal) / ray.direction().length()
+            self.ref_idx() * dot(ray.direction(), &hit.normal) / ray.direction().length()
         } else {
-            -dot(&ray.direction(), &hit.normal) / ray.direction().length()
+            -dot(ray.direction(), &hit.normal) / ray.direction().length()
         };
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let attenuation = Vec3(1., 1., 1.);
-        match refract(&ray.direction(), &outward_normal, ni_over_nt) {
+        match refract(ray.direction(), &outward_normal, ni_over_nt) {
             None => Some((Ray::new(hit.point_at_parameter, reflected), attenuation)),
             Some(refracted) => {
-                if rng.gen::<f32>() < schlick(cosine, self.ref_idx) {
+                if rng.random::<f32>() < schlick(cosine, self.ref_idx) {
                     Some((Ray::new(hit.point_at_parameter, reflected), attenuation))
                 } else {
                     Some((Ray::new(hit.point_at_parameter, refracted), attenuation))

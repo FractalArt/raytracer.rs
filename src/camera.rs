@@ -8,10 +8,10 @@ use crate::vec3::Vec3;
 // Choose a vector on the unit disk.
 fn random_in_unit_disk() -> Vec3 {
     // Random number generator
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     loop {
-        let p = 2.0 * Vec3(rng.gen::<f32>(), rng.gen::<f32>(), 0.0) - Vec3(1., 1., 0.);
+        let p = 2.0 * Vec3(rng.random::<f32>(), rng.random::<f32>(), 0.0) - Vec3(1., 1., 0.);
         if p.squared_length() < 1.0 {
             break p;
         }

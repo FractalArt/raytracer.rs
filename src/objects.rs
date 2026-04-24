@@ -17,6 +17,13 @@ pub trait Hitable: Send + Sync {
     fn intersect(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord>;
 }
 
+
+impl Hitable for Box<dyn Hitable> {
+    fn intersect(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        self.as_ref().intersect(ray, t_min, t_max)
+    }
+}
+
 #[derive(Default)]
 pub struct HitableList {
     hitable_objects: Vec<Box<dyn Hitable>>,
@@ -34,7 +41,7 @@ impl Hitable for HitableList {
         let mut hit_record = None;
         let mut closest_so_far = t_max;
         for object in &self.hitable_objects {
-            if let Some(hit) = object.intersect(&ray, t_min, closest_so_far) {
+            if let Some(hit) = object.intersect(ray, t_min, closest_so_far) {
                 closest_so_far = hit.parameter;
                 hit_record = Some(hit);
             }

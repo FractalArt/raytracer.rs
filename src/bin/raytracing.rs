@@ -13,10 +13,10 @@ use raytracer::ray::Ray;
 use raytracer::vec3::*;
 
 // For now the color is a simple gradient background.
-fn color(r: &Ray, world: &Box<dyn Hitable>, depth: i32) -> Vec3 {
-    match world.intersect(&r, 0.001, std::f32::MAX) {
+fn color(r: &Ray, world: &dyn Hitable, depth: i32) -> Vec3 {
+    match world.intersect(r, 0.001, f32::MAX) {
         Some(hit) => {
-            let scatter_info = hit.material.scatter(&r, &hit);
+            let scatter_info = hit.material.scatter(r, &hit);
             match scatter_info {
                 Some((scattered, attenuation)) => {
                     if depth < 50 {
@@ -29,7 +29,7 @@ fn color(r: &Ray, world: &Box<dyn Hitable>, depth: i32) -> Vec3 {
             }
         }
         None => {
-            let unit_direction = unit_vector(&r.direction());
+            let unit_direction = unit_vector(r.direction());
             let t = 0.5 * (unit_direction.y() + 1.);
             (1. - t) * Vec3(1., 1., 1.) + t * Vec3(0.5, 0.7, 1.0)
         }
@@ -45,15 +45,15 @@ fn random_scene() -> Box<dyn Hitable> {
     )));
 
     // Random number generator
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     for a in -11..11 {
         for b in -11..11 {
-            let choose_mat = rng.gen::<f32>();
+            let choose_mat = rng.random::<f32>();
             let center = Vec3(
-                a as f32 + 0.6 * rng.gen::<f32>(),
+                a as f32 + 0.6 * rng.random::<f32>(),
                 0.2,
-                b as f32 + 0.6 * rng.gen::<f32>(),
+                b as f32 + 0.6 * rng.random::<f32>(),
             );
             let c1 = Vec3(4.0, 1.0, 0.);
             let c2 = Vec3(-4.0, 1.0, 0.);
@@ -68,9 +68,9 @@ fn random_scene() -> Box<dyn Hitable> {
                         center,
                         0.2,
                         Arc::new(Lambertian::new(Vec3(
-                            rng.gen::<f32>(),
-                            rng.gen::<f32>(),
-                            rng.gen::<f32>(),
+                            rng.random::<f32>(),
+                            rng.random::<f32>(),
+                            rng.random::<f32>(),
                         ))),
                     )));
                 } else if choose_mat < 0.95 {
@@ -80,11 +80,11 @@ fn random_scene() -> Box<dyn Hitable> {
                         0.2,
                         Arc::new(Metal::new(
                             Vec3(
-                                0.5 * (1. + rng.gen::<f32>()),
-                                0.5 * (1. + rng.gen::<f32>()),
-                                0.5 * (1. + rng.gen::<f32>()),
+                                0.5 * (1. + rng.random::<f32>()),
+                                0.5 * (1. + rng.random::<f32>()),
+                                0.5 * (1. + rng.random::<f32>()),
                             ),
-                            0.5 * rng.gen::<f32>(),
+                            0.5 * rng.random::<f32>(),
                         )),
                     )));
                 } else {
@@ -150,12 +150,12 @@ fn main() {
             let y = ny - y - 1;
 
             // Random number generator
-            let mut rng = rand::thread_rng();
+            let mut rng = rand::rng();
 
             let mut col = Vec3(0., 0., 0.);
             for _ in 0..ns {
-                let u = (x as f32 + rng.gen::<f32>()) / nx as f32;
-                let v = (y as f32 + rng.gen::<f32>()) as f32 / ny as f32;
+                let u = (x as f32 + rng.random::<f32>()) / nx as f32;
+                let v = (y as f32 + rng.random::<f32>()) as f32 / ny as f32;
 
                 let r = cam.get_ray(u, v);
                 col += color(&r, &world, 0);
